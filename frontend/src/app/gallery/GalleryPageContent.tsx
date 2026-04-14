@@ -209,7 +209,7 @@ export default function GalleryPageContent({ currentPage, totalPages }: GalleryP
                 <WhatsAppIcon className="h-5 w-5" />
                 تواصل واتساب
               </a>
-              <a href="tel:01151458667" className="flex items-center gap-2 rounded-xl bg-primary-500 px-6 py-3 text-sm font-bold text-white hover:bg-primary-600">
+              <a href="tel:01105001387" className="flex items-center gap-2 rounded-xl bg-primary-500 px-6 py-3 text-sm font-bold text-white hover:bg-primary-600">
                 اتصل الآن: {SITE_CONFIG.phone}
               </a>
             </div>

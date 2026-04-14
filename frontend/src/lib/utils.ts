@@ -21,7 +21,7 @@ export function slugify(text: string): string {
 }
 
 export function getWhatsAppUrl(message?: string): string {
-  const base = 'https://wa.me/+201151458667'
+  const base = 'https://wa.me/+201105001387'
   if (message) {
     return `${base}?text=${encodeURIComponent(message)}`
   }
@@ -29,7 +29,7 @@ export function getWhatsAppUrl(message?: string): string {
 }
 
 export function getPhoneUrl(): string {
-  return 'tel:01151458667'
+  return 'tel:01105001387'
 }
 
 export function truncate(text: string, length: number): string {

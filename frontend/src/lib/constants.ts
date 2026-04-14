@@ -1,13 +1,13 @@
 export const SITE_CONFIG = {
   name: 'الأشقاء للركن والستائر',
   shortName: 'الأشقاء',
-  description: 'الأشقاء للركن والستائر - تصنيع وبيع الركن والستائر بجودة عالية. تصميمات عصرية – خامات مميزة – تنفيذ حسب الطلب. اتصل الآن 01151458667',
+  description: 'الأشقاء للركن والستائر - تصنيع وبيع الركن والستائر بجودة عالية. تصميمات عصرية – خامات مميزة – تنفيذ حسب الطلب. اتصل الآن 01105001387',
   url: 'https://alashqaasofascurtains.shop',
   locale: 'ar_EG',
   language: 'ar',
-  phone: '01151458667',
-  phone2: '01107110565',
-  whatsapp: '+201151458667',
+  phone: '01105001387',
+  phone2: '01105001387',
+  whatsapp: '+201105001387',
   email: 'info@alashqaasofascurtains.shop',
   facebook: 'https://www.facebook.com/share/1cBcPrpSoF/',
   foundedYear: 2007,
@@ -143,7 +143,7 @@ export const PROCESS_STEPS = [
   {
     step: 1,
     title: 'اتصل واحجز',
-    description: 'اتصل بنا على 01151458667 أو تواصل عبر الواتساب لحجز موعد معاينة مجانية',
+    description: 'اتصل بنا على 01105001387 أو تواصل عبر الواتساب لحجز موعد معاينة مجانية',
   },
   {
     step: 2,

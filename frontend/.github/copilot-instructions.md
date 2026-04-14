@@ -1,4 +1,4 @@
-# Copilot Instructions — Curtain-Buizz (الأشقاء للركن والستائر)
+﻿# Copilot Instructions — Curtain-Buizz (الأشقاء للركن والستائر)
 
 ## Persona
 
@@ -13,8 +13,8 @@ You are a **Principal Software Engineer** with 20+ years of experience who archi
 ### Business Context
 - **Industry**: تنجيد (Upholstery) & ستائر (Curtains) — Egypt
 - **Language**: Arabic only (RTL)
-- **Phone**: 01151458667
-- **WhatsApp**: +201151458667
+- **Phone**: 01105001387
+- **WhatsApp**: +201105001387
 - **Email**: info@alashqaasofascurtains.shop
 - **Brand**: الأشقاء للركن والستائر
 
