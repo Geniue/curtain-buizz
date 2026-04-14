@@ -1,0 +1,27 @@
+# Root
+.env
+.env.local
+*.log
+
+# Frontend (Next.js)
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Backend (Laravel)
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/storage/*.key
+backend/storage/app/public/
+backend/public/storage
+backend/public/hot
+backend/public/css/filament/
+backend/public/js/filament/
+backend/public/fonts/filament/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

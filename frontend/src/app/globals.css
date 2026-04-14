@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    direction: rtl;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-arabic text-gray-900 bg-white;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold leading-tight;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply mx-auto max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-padding {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-primary-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600;
+  }
+
+  .btn-whatsapp {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 px-6 py-3 text-base font-semibold text-white shadow-sm transition-all duration-200 hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 border-primary-600 px-6 py-3 text-base font-semibold text-primary-600 transition-all duration-200 hover:bg-primary-600 hover:text-white;
+  }
+
+  .prose-arabic {
+    @apply text-gray-700 leading-relaxed;
+  }
+
+  .prose-arabic h2 {
+    @apply text-2xl font-bold text-gray-900 mt-10 mb-4;
+  }
+
+  .prose-arabic h3 {
+    @apply text-xl font-bold text-gray-900 mt-8 mb-3;
+  }
+
+  .prose-arabic p {
+    @apply mb-4 text-lg leading-loose;
+  }
+
+  .prose-arabic ul, .prose-arabic ol {
+    @apply mb-4 pr-6;
+  }
+
+  .prose-arabic li {
+    @apply mb-2;
+  }
+
+  .prose-arabic img {
+    @apply rounded-xl my-6 w-full;
+  }
+
+  .prose-arabic a {
+    @apply text-primary-600 underline hover:text-primary-800;
+  }
+
+  .prose-arabic blockquote {
+    @apply border-r-4 border-primary-500 pr-4 my-6 text-gray-600 italic;
+  }
+
+  .prose-arabic table {
+    @apply w-full border-collapse my-6;
+  }
+
+  .prose-arabic th, .prose-arabic td {
+    @apply border border-gray-300 px-4 py-2 text-right;
+  }
+
+  .prose-arabic th {
+    @apply bg-gray-100 font-bold;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .rtl-flip {
+    transform: scaleX(-1);
+  }
+}

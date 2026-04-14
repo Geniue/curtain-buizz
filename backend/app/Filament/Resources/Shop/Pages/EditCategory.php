@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Filament\Resources\Shop\Pages;
+
+use App\Filament\Resources\Shop\CategoryResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditCategory extends EditRecord
+{
+    protected static string $resource = CategoryResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [DeleteAction::make()];
+    }
+}
