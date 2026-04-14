@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Script from 'next/script'
 import { IBM_Plex_Sans_Arabic } from 'next/font/google'
 import { SITE_CONFIG } from '@/lib/constants'
 import Header from '@/components/layout/Header'
@@ -104,10 +103,10 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <Script
+        <script
           src="https://analytics.ahrefs.com/analytics.js"
           data-key="1T4yD8E+k1iFFKPyN9Ed8Q"
-          strategy="afterInteractive"
+          async
         />
       </head>
       <body className="font-arabic antialiased">
