@@ -1,3 +1,8 @@
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001/api'
+const backendOrigin = apiBaseUrl.startsWith('http')
+  ? apiBaseUrl.replace(/\/api\/?$/, '')
+  : 'http://localhost:8001'
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -10,6 +15,7 @@ const nextConfig = {
   poweredByHeader: false,
   async rewrites() {
     return [
+      { source: '/storage/:path*', destination: `${backendOrigin}/storage/:path*` },
       { source: '/%D9%85%D9%86-%D9%86%D8%AD%D9%86', destination: '/about' },
       { source: '/من-نحن', destination: '/about' },
       { source: '/%D8%AA%D9%88%D8%A7%D8%B5%D9%84-%D9%85%D8%B9%D9%86%D8%A7', destination: '/contact' },

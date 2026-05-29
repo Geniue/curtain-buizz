@@ -46,9 +46,10 @@ class BlogForm
                         FileUpload::make('image')
                             ->label('صورة المقال')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->disk('public')
                             ->directory('blog-images')
-                            ->imageResizeMode('cover')
-                            ->imageCropAspectRatio('16:9'),
+                            ->visibility('public'),
                         TextInput::make('image_alt')
                             ->label('وصف الصورة')
                             ->maxLength(255),

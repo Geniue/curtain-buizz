@@ -5,17 +5,12 @@ import { notFound } from 'next/navigation'
 import Breadcrumbs from '@/components/seo/Breadcrumbs'
 import { ArticleSchema } from '@/components/seo/SchemaMarkup'
 import BlogCard from '@/components/blog/BlogCard'
-import { getPostBySlug, getAllSlugs, getRelatedPosts } from '@/lib/blog'
+import { getPostBySlug, getRelatedPosts } from '@/lib/blog'
 import { SITE_CONFIG } from '@/lib/constants'
 import { formatDate, getWhatsAppUrl, getPhoneUrl } from '@/lib/utils'
 
 interface BlogPostPageProps {
   params: { slug: string }
-}
-
-export async function generateStaticParams() {
-  const slugs = getAllSlugs()
-  return slugs.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
@@ -59,7 +54,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const post = await getPostBySlug(params.slug)
   if (!post) notFound()
 
-  const relatedPosts = getRelatedPosts(params.slug, 3)
+  const relatedPosts = await getRelatedPosts(params.slug, 3)
 
   return (
     <>
@@ -111,7 +106,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 priority
                 sizes="(max-width: 768px) 100vw, 768px"
                 className="object-cover"
-                unoptimized={post.image.endsWith('.svg')}
+                unoptimized={post.image.endsWith('.svg') || post.image.startsWith('http') || post.image.startsWith('/storage/')}
               />
             </div>
 

@@ -19,7 +19,7 @@ export default function BlogCard({ post }: BlogCardProps) {
             fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
-            unoptimized={post.image.endsWith('.svg')}
+            unoptimized={post.image.endsWith('.svg') || post.image.startsWith('http') || post.image.startsWith('/storage/')}
           />
           <div className="absolute top-3 right-3">
             <span className="inline-block rounded-full bg-primary-600 px-3 py-1 text-xs font-semibold text-white">

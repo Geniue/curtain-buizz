@@ -45,8 +45,8 @@ const HOME_FAQS: FAQ[] = [
   },
 ]
 
-export default function HomePage() {
-  const latestPosts = getAllPosts().slice(0, 6)
+export default async function HomePage() {
+  const latestPosts = (await getAllPosts()).slice(0, 6)
 
   return (
     <>

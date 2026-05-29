@@ -4,8 +4,8 @@ import { SITE_CONFIG, LOCATIONS } from '@/lib/constants'
 import { SHOP_PRODUCTS, SHOP_CATEGORIES } from '@/lib/shop-data'
 import { getTotalGalleryPages } from '@/lib/gallery-data'
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const posts = getAllPosts()
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const posts = await getAllPosts()
 
   const blogEntries = posts.map((post) => ({
     url: `${SITE_CONFIG.url}/المدونة/${post.slug}`,

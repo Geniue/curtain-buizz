@@ -13,8 +13,8 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 }
 
-export default function BlogPage() {
-  const posts = getAllPosts()
+export default async function BlogPage() {
+  const posts = await getAllPosts()
 
   return (
     <>
