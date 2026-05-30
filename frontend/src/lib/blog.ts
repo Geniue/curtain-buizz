@@ -1,3 +1,6 @@
+import fs from 'fs'
+import path from 'path'
+import matter from 'gray-matter'
 import { remark } from 'remark'
 import html from 'remark-html'
 import readingTime from 'reading-time'
@@ -20,8 +23,23 @@ interface ApiBlogPost {
   created_at?: string | null
 }
 
+interface StaticBlogFrontmatter {
+  slug?: string
+  title?: string
+  description?: string
+  date?: string
+  author?: string
+  image?: string
+  imageAlt?: string
+  image_alt?: string
+  category?: string
+  tags?: unknown
+  keywords?: unknown
+}
+
 type ApiListResponse = ApiBlogPost[] | { data?: ApiBlogPost[] }
 
+const BLOG_DIR = path.join(process.cwd(), 'src/content/blog')
 const API_BASE_URLS = [
   process.env.NEXT_PUBLIC_API_URL,
   process.env.BACKEND_API_URL,
@@ -34,6 +52,18 @@ const API_BASE_URLS = [
 const DEFAULT_AUTHOR = 'الأشقاء'
 const DEFAULT_CATEGORY = 'تنجيد'
 const DEFAULT_IMAGE = '/images/blog/tanzid-kanab-baladi.svg'
+
+function ensureBlogDir(): void {
+  if (!fs.existsSync(BLOG_DIR)) {
+    fs.mkdirSync(BLOG_DIR, { recursive: true })
+  }
+}
+
+function getMarkdownFileNames(): string[] {
+  ensureBlogDir()
+
+  return fs.readdirSync(BLOG_DIR).filter((file) => file.endsWith('.md'))
+}
 
 async function fetchBlogJson<T>(path: string): Promise<T | null> {
   for (const baseUrl of API_BASE_URLS) {
@@ -94,7 +124,7 @@ function getPostDate(post: ApiBlogPost): string {
   return post.date ?? post.created_at ?? new Date().toISOString()
 }
 
-function normalizePostMeta(post: ApiBlogPost): BlogPostMeta | null {
+function normalizeApiPostMeta(post: ApiBlogPost): BlogPostMeta | null {
   if (!post.slug || !post.title) return null
 
   const contentForStats = post.content ?? post.description ?? ''
@@ -114,7 +144,47 @@ function normalizePostMeta(post: ApiBlogPost): BlogPostMeta | null {
   }
 }
 
-async function renderContent(content: string): Promise<string> {
+function normalizeStaticPostMeta(
+  slug: string,
+  data: StaticBlogFrontmatter,
+  content: string,
+): BlogPostMeta | null {
+  if (!data.title) return null
+
+  return {
+    slug,
+    title: data.title,
+    description: data.description ?? '',
+    date: data.date ?? new Date().toISOString(),
+    author: data.author ?? DEFAULT_AUTHOR,
+    image: normalizeImageUrl(data.image),
+    imageAlt: data.imageAlt ?? data.image_alt ?? data.title,
+    category: data.category ?? DEFAULT_CATEGORY,
+    tags: normalizeStringArray(data.tags),
+    keywords: normalizeStringArray(data.keywords),
+    readingTime: getReadingTime(content),
+  }
+}
+
+function getStaticPostFromFile(fileName: string): { meta: BlogPostMeta; content: string } | null {
+  const filePath = path.join(BLOG_DIR, fileName)
+  const fileContent = fs.readFileSync(filePath, 'utf-8')
+  const { data, content } = matter(fileContent)
+  const frontmatter = data as StaticBlogFrontmatter
+  const fileSlug = fileName.replace(/\.md$/, '')
+  const slug = frontmatter.slug ?? fileSlug
+  const meta = normalizeStaticPostMeta(slug, frontmatter, content)
+
+  if (!meta) return null
+
+  return { meta, content }
+}
+
+async function renderMarkdownContent(content: string): Promise<string> {
+  return (await remark().use(html).process(content)).toString()
+}
+
+async function renderApiContent(content: string): Promise<string> {
   const trimmedContent = content.trim()
 
   if (!trimmedContent) {
@@ -125,7 +195,7 @@ async function renderContent(content: string): Promise<string> {
     return trimmedContent
   }
 
-  return (await remark().use(html).process(trimmedContent)).toString()
+  return renderMarkdownContent(trimmedContent)
 }
 
 function normalizeListResponse(response: ApiListResponse | null): ApiBlogPost[] {
@@ -136,6 +206,36 @@ function normalizeListResponse(response: ApiListResponse | null): ApiBlogPost[] 
   return response?.data ?? []
 }
 
+function mergePosts(staticPosts: BlogPostMeta[], apiPosts: BlogPostMeta[]): BlogPostMeta[] {
+  const postsBySlug = new Map<string, BlogPostMeta>()
+
+  for (const post of staticPosts) {
+    postsBySlug.set(post.slug, post)
+  }
+
+  for (const post of apiPosts) {
+    postsBySlug.set(post.slug, post)
+  }
+
+  return Array.from(postsBySlug.values())
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+}
+
+export function getStaticPosts(): BlogPostMeta[] {
+  return getMarkdownFileNames()
+    .map(getStaticPostFromFile)
+    .filter((post): post is { meta: BlogPostMeta; content: string } => post !== null)
+    .map((post) => post.meta)
+}
+
+export async function getApiPosts(): Promise<BlogPostMeta[]> {
+  const response = await fetchBlogJson<ApiListResponse>('/blogs')
+
+  return normalizeListResponse(response)
+    .map(normalizeApiPostMeta)
+    .filter((post): post is BlogPostMeta => post !== null)
+}
+
 export async function getAllSlugs(): Promise<string[]> {
   const posts = await getAllPosts()
 
@@ -143,13 +243,10 @@ export async function getAllSlugs(): Promise<string[]> {
 }
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
-  const response = await fetchBlogJson<ApiListResponse>('/blogs')
-  const posts = normalizeListResponse(response)
-    .map(normalizePostMeta)
-    .filter((post): post is BlogPostMeta => post !== null)
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const staticPosts = getStaticPosts()
+  const apiPosts = await getApiPosts()
 
-  return posts
+  return mergePosts(staticPosts, apiPosts)
 }
 
 export async function getPostMeta(slug: string): Promise<BlogPostMeta | null> {
@@ -162,18 +259,45 @@ export async function getPostMeta(slug: string): Promise<BlogPostMeta | null> {
   return meta
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+export async function getStaticPostBySlug(slug: string): Promise<BlogPost | null> {
+  const decodedSlug = decodeURIComponent(slug)
+
+  for (const fileName of getMarkdownFileNames()) {
+    const post = getStaticPostFromFile(fileName)
+
+    if (!post || post.meta.slug !== decodedSlug) {
+      continue
+    }
+
+    return {
+      ...post.meta,
+      content: await renderMarkdownContent(post.content),
+    }
+  }
+
+  return null
+}
+
+export async function getApiPostBySlug(slug: string): Promise<BlogPost | null> {
   const decodedSlug = decodeURIComponent(slug)
   const post = await fetchBlogJson<ApiBlogPost>(`/blogs/${encodeURIComponent(decodedSlug)}`)
-  const meta = post ? normalizePostMeta(post) : null
+  const meta = post ? normalizeApiPostMeta(post) : null
 
   if (!post || !meta) return null
 
   return {
     ...meta,
-    content: await renderContent(post.content ?? ''),
+    content: await renderApiContent(post.content ?? ''),
     readingTime: getReadingTime(post.content ?? post.description ?? ''),
   }
+}
+
+export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  const apiPost = await getApiPostBySlug(slug)
+
+  if (apiPost) return apiPost
+
+  return getStaticPostBySlug(slug)
 }
 
 export async function getPostsByCategory(category: string): Promise<BlogPostMeta[]> {

@@ -43,7 +43,7 @@ export function ArticleSchema({
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${SITE_CONFIG.url}/المدونة/${slug}`,
+      '@id': `${SITE_CONFIG.url}/blog/${slug}`,
     },
   }
 

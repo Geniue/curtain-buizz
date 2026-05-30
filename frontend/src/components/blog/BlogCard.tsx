@@ -11,7 +11,7 @@ interface BlogCardProps {
 export default function BlogCard({ post }: BlogCardProps) {
   return (
     <article className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 transition-all duration-300 hover:shadow-lg hover:ring-primary-200">
-      <Link href={`/المدونة/${post.slug}`} className="block">
+      <Link href={`/blog/${post.slug}`} className="block">
         <div className="relative aspect-[16/10] overflow-hidden">
           <Image
             src={post.image}

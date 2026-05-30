@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       images: [post.image.startsWith('http') ? post.image : `${SITE_CONFIG.url}${post.image}`],
     },
     alternates: {
-      canonical: `${SITE_CONFIG.url}/المدونة/${params.slug}`,
+      canonical: `${SITE_CONFIG.url}/blog/${params.slug}`,
     },
     robots: { index: true, follow: true },
   }
@@ -69,8 +69,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
       <Breadcrumbs
         items={[
-          { name: 'المدونة', href: '/المدونة' },
-          { name: post.title, href: `/المدونة/${params.slug}` },
+          { name: 'المدونة', href: '/blog' },
+          { name: post.title, href: `/blog/${params.slug}` },
         ]}
       />
 

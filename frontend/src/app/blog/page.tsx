@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'المدونة — أحدث مقالات تنجيد الأثاث والستائر',
   description: 'اطلع على أحدث المقالات والتصميمات في عالم تنجيد الانتريهات والصالونات والركنات وأقمشة التنجيد والستائر المودرن. الأشقاء للركن والستائر.',
   alternates: {
-    canonical: `${SITE_CONFIG.url}/المدونة`,
+    canonical: `${SITE_CONFIG.url}/blog`,
   },
   robots: { index: true, follow: true },
 }
@@ -18,7 +18,7 @@ export default async function BlogPage() {
 
   return (
     <>
-      <Breadcrumbs items={[{ name: 'المدونة', href: '/المدونة' }]} />
+      <Breadcrumbs items={[{ name: 'المدونة', href: '/blog' }]} />
 
       <section className="section-padding">
         <div className="container-custom">
