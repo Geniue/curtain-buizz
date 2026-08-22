@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\GalleryController;
 use App\Http\Controllers\Api\ShopController;
 use Illuminate\Http\Request;
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// Contact form
+Route::post('/contact', [ContactController::class, 'store']);
 
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/categories', [BlogController::class, 'categories']);
