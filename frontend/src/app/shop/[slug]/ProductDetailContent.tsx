@@ -235,7 +235,7 @@ export default function ProductDetailContent({ product, related }: ProductDetail
 
             <div className="py-6">
               {activeTab === 'description' && (
-                <div className="prose-arabic max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
+                <div className="prose-arabic product-description max-w-none" dangerouslySetInnerHTML={{ __html: product.description }} />
               )}
               {activeTab === 'specs' && (
                 <table className="w-full max-w-xl">

@@ -45,7 +45,7 @@
   }
 
   .prose-arabic {
-    @apply text-gray-700 leading-relaxed;
+    @apply text-right text-gray-700 leading-relaxed;
   }
 
   .prose-arabic h2 {
@@ -56,16 +56,29 @@
     @apply text-xl font-bold text-gray-900 mt-8 mb-3;
   }
 
-  .prose-arabic p {
+  /* Direct children only: RichEditor wraps list items in their own <p>, and
+     article spacing on those produced huge gaps between bullets. */
+  .prose-arabic > p {
     @apply mb-4 text-lg leading-loose;
   }
 
-  .prose-arabic ul, .prose-arabic ol {
-    @apply mb-4 pr-6;
+  /* Preflight resets list-style to none, so the markers have to be restored
+     explicitly or RichEditor lists render as unmarked lines. Padding is on the
+     right because the content is RTL. */
+  .prose-arabic ul {
+    @apply mb-5 list-disc pr-7;
+  }
+
+  .prose-arabic ol {
+    @apply mb-5 list-decimal pr-7;
   }
 
   .prose-arabic li {
-    @apply mb-2;
+    @apply mb-2 text-base leading-8;
+  }
+
+  .prose-arabic li > p {
+    @apply m-0 text-base leading-8;
   }
 
   .prose-arabic img {
@@ -90,6 +103,27 @@
 
   .prose-arabic th {
     @apply bg-gray-100 font-bold;
+  }
+
+  /* Product descriptions are paragraph-based rich text saved from Filament and
+     sit alongside text-sm specs and shipping panels, so the article-scale
+     .prose-arabic paragraph rhythm reads oversized here. Scoped to the product
+     tab so blog and marketing typography is untouched. */
+  .prose-arabic.product-description > p {
+    @apply mb-2 text-base leading-7;
+  }
+
+  .prose-arabic.product-description > p:last-child {
+    @apply mb-0;
+  }
+
+  /* The editor can leave trailing empty nodes; collapse them so they do not
+     add dead space under the description. Presentation only - the stored HTML
+     is untouched. */
+  .prose-arabic.product-description > p:empty,
+  .prose-arabic.product-description > h2:empty,
+  .prose-arabic.product-description > h3:empty {
+    @apply hidden;
   }
 }
 
