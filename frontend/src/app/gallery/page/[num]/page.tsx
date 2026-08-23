@@ -1,17 +1,19 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { SITE_CONFIG } from '@/lib/constants'
-import { getTotalGalleryPages } from '@/lib/gallery-data'
+import { getAllGalleryItems } from '@/lib/api/gallery'
+import { GALLERY_PAGE_SIZE } from '@/lib/gallery-data'
 import GalleryPageContent from '../../GalleryPageContent'
 
 interface PageProps {
   params: Promise<{ num: string }>
 }
 
-export async function generateStaticParams() {
-  const totalPages = getTotalGalleryPages()
-  return Array.from({ length: totalPages }, (_, i) => ({ num: String(i + 1) }))
-}
+/**
+ * Page count follows the CMS record count, so routes are resolved per request
+ * rather than frozen into generateStaticParams at build time.
+ */
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { num } = await params
@@ -30,9 +32,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function GalleryPaginatedPage({ params }: PageProps) {
   const { num } = await params
   const page = parseInt(num)
-  const totalPages = getTotalGalleryPages()
 
-  if (isNaN(page) || page < 1 || page > totalPages) notFound()
+  if (isNaN(page) || page < 1) notFound()
 
-  return <GalleryPageContent currentPage={page} totalPages={totalPages} />
+  const { items, total } = await getAllGalleryItems()
+  const totalPages = Math.max(1, Math.ceil(total / GALLERY_PAGE_SIZE))
+
+  if (page > totalPages) notFound()
+
+  return <GalleryPageContent items={items} currentPage={page} totalPages={totalPages} />
 }

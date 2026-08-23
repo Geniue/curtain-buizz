@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ShoppingCart, Minus, Plus, Truck, Shield, CreditCard, ChevronLeft } from 'lucide-react'
-import { ShopProduct, formatPrice, getDiscountPercent, getRelatedProducts, FREE_SHIPPING_THRESHOLD } from '@/lib/shop-data'
+import { ShopProduct, formatPrice, getDiscountPercent, FREE_SHIPPING_THRESHOLD } from '@/lib/shop-data'
 import { SITE_CONFIG } from '@/lib/constants'
 import { useCart } from '@/lib/cart-context'
 import { getWhatsAppUrl } from '@/lib/utils'
@@ -12,14 +12,19 @@ import ProductGallery from '@/components/shop/ProductGallery'
 import ProductCard from '@/components/shop/ProductCard'
 import WhatsAppIcon from '@/components/icons/WhatsAppIcon'
 
-export default function ProductDetailContent({ product }: { product: ShopProduct }) {
+interface ProductDetailContentProps {
+  product: ShopProduct
+  /** Same-category products chosen by the backend. */
+  related: ShopProduct[]
+}
+
+export default function ProductDetailContent({ product, related }: ProductDetailContentProps) {
   const { addItem } = useCart()
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState<'description' | 'specs' | 'shipping'>('description')
   const [addedFeedback, setAddedFeedback] = useState(false)
 
   const discount = getDiscountPercent(product.price, product.oldPrice)
-  const related = getRelatedProducts(product)
 
   const handleAddToCart = () => {
     addItem(

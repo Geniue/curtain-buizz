@@ -75,7 +75,9 @@ class ProductForm
                             ->image()
                             ->multiple()
                             ->reorderable()
+                            ->disk('public')
                             ->directory('products')
+                            ->visibility('public')
                             ->imageResizeMode('cover')
                             ->maxSize(5120)
                             ->maxFiles(10),

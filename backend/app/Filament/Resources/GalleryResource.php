@@ -62,7 +62,9 @@ class GalleryResource extends Resource
                     ->label('الصورة')
                     ->image()
                     ->required()
+                    ->disk('public')
                     ->directory('gallery')
+                    ->visibility('public')
                     ->imageResizeMode('cover')
                     ->maxSize(5120),
                 TextInput::make('alt_text')

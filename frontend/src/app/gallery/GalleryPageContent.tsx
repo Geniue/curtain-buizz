@@ -5,35 +5,38 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, Camera } from 'lucide-react'
-import { GALLERY_ITEMS, ITEMS_PER_PAGE, getActiveCategories } from '@/lib/gallery-data'
+import { ALL_CATEGORIES_LABEL, GALLERY_PAGE_SIZE, type GalleryItem } from '@/lib/gallery-data'
 import { SITE_CONFIG } from '@/lib/constants'
 import { getWhatsAppUrl } from '@/lib/utils'
 import WhatsAppIcon from '@/components/icons/WhatsAppIcon'
 
 interface GalleryPageContentProps {
+  /** Every active gallery record, from the CMS. */
+  items: GalleryItem[]
   currentPage: number
   totalPages: number
 }
 
-export default function GalleryPageContent({ currentPage, totalPages }: GalleryPageContentProps) {
-  const [activeCategory, setActiveCategory] = useState('الكل')
+export default function GalleryPageContent({ items, currentPage, totalPages }: GalleryPageContentProps) {
+  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORIES_LABEL)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-  const categories = getActiveCategories()
+
+  const categories = useMemo(
+    () => [ALL_CATEGORIES_LABEL, ...Array.from(new Set(items.map((i) => i.category)))],
+    [items]
+  )
 
   const filteredItems = useMemo(() => {
-    let items = [...GALLERY_ITEMS]
-    if (activeCategory !== 'الكل') {
-      items = items.filter((i) => i.category === activeCategory)
-    }
-    return items
-  }, [activeCategory])
+    if (activeCategory === ALL_CATEGORIES_LABEL) return items
+    return items.filter((i) => i.category === activeCategory)
+  }, [items, activeCategory])
 
   // When filtering by category, show all filtered. When "الكل", paginate.
-  const displayItems = activeCategory === 'الكل'
-    ? filteredItems.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+  const displayItems = activeCategory === ALL_CATEGORIES_LABEL
+    ? filteredItems.slice((currentPage - 1) * GALLERY_PAGE_SIZE, currentPage * GALLERY_PAGE_SIZE)
     : filteredItems
 
-  const showPagination = activeCategory === 'الكل' && totalPages > 1
+  const showPagination = activeCategory === ALL_CATEGORIES_LABEL && totalPages > 1
 
   return (
     <>
@@ -82,7 +85,7 @@ export default function GalleryPageContent({ currentPage, totalPages }: GalleryP
           </p>
           <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-400">
             <Camera className="h-4 w-4" />
-            <span>{GALLERY_ITEMS.length} صورة حقيقية من أعمالنا</span>
+            <span>{items.length} صورة حقيقية من أعمالنا</span>
           </div>
         </div>
       </section>
@@ -103,7 +106,7 @@ export default function GalleryPageContent({ currentPage, totalPages }: GalleryP
               >
                 {cat}
                 <span className="ms-1 text-xs opacity-70">
-                  ({cat === 'الكل' ? GALLERY_ITEMS.length : GALLERY_ITEMS.filter((i) => i.category === cat).length})
+                  ({cat === ALL_CATEGORIES_LABEL ? items.length : items.filter((i) => i.category === cat).length})
                 </span>
               </button>
             ))}
@@ -119,7 +122,7 @@ export default function GalleryPageContent({ currentPage, totalPages }: GalleryP
                 transition={{ delay: idx * 0.03 }}
               >
                 <button
-                  onClick={() => setLightboxIndex(GALLERY_ITEMS.findIndex((g) => g.id === item.id))}
+                  onClick={() => setLightboxIndex(items.findIndex((g) => g.id === item.id))}
                   className="group relative aspect-square w-full overflow-hidden rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500"
                   aria-label={`عرض صورة: ${item.title}`}
                 >
@@ -244,7 +247,7 @@ export default function GalleryPageContent({ currentPage, totalPages }: GalleryP
                 <ChevronRight className="h-6 w-6" />
               </button>
             )}
-            {lightboxIndex < GALLERY_ITEMS.length - 1 && (
+            {lightboxIndex < items.length - 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1) }}
                 className="absolute end-4 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-white backdrop-blur hover:bg-white/30"
@@ -262,15 +265,15 @@ export default function GalleryPageContent({ currentPage, totalPages }: GalleryP
               onClick={(e) => e.stopPropagation()}
             >
               <Image
-                src={GALLERY_ITEMS[lightboxIndex].image}
-                alt={GALLERY_ITEMS[lightboxIndex].altText}
+                src={items[lightboxIndex].image}
+                alt={items[lightboxIndex].altText}
                 width={1200}
                 height={800}
                 className="max-h-[85vh] w-auto rounded-lg object-contain"
               />
               <div className="mt-3 text-center">
-                <p className="text-sm font-bold text-white">{GALLERY_ITEMS[lightboxIndex].title}</p>
-                <p className="text-xs text-white/60">{GALLERY_ITEMS[lightboxIndex].category} • {lightboxIndex + 1}/{GALLERY_ITEMS.length}</p>
+                <p className="text-sm font-bold text-white">{items[lightboxIndex].title}</p>
+                <p className="text-xs text-white/60">{items[lightboxIndex].category} • {lightboxIndex + 1}/{items.length}</p>
               </div>
             </motion.div>
           </motion.div>

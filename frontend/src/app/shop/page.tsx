@@ -1,6 +1,10 @@
 import type { Metadata } from 'next'
 import { SITE_CONFIG } from '@/lib/constants'
+import { getShopCatalogue } from '@/lib/api/shop'
 import ShopContent from './ShopContent'
+
+// CMS-managed catalogue: never freeze this page into a build-time snapshot.
+export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'المتجر — اشتري ركنات وستائر وأثاث اونلاين | الأشقاء للركن والستائر',
@@ -27,6 +31,13 @@ export const metadata: Metadata = {
   },
 }
 
-export default function ShopPage() {
-  return <ShopContent />
+export default async function ShopPage() {
+  try {
+    const { products, categories, total } = await getShopCatalogue()
+
+    return <ShopContent products={products} categories={categories} total={total} />
+  } catch {
+    // Surface the backend outage instead of falling back to stale fake records.
+    return <ShopContent products={[]} categories={[]} total={0} loadFailed />
+  }
 }

@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Search, SlidersHorizontal, Package } from 'lucide-react'
-import { SHOP_PRODUCTS, SHOP_CATEGORIES, formatPrice, FREE_SHIPPING_THRESHOLD } from '@/lib/shop-data'
+import { ShopCategory, ShopProduct, formatPrice, FREE_SHIPPING_THRESHOLD } from '@/lib/shop-data'
 import { SITE_CONFIG } from '@/lib/constants'
 import ProductCard from '@/components/shop/ProductCard'
 import WhatsAppIcon from '@/components/icons/WhatsAppIcon'
@@ -11,41 +11,49 @@ import { getWhatsAppUrl } from '@/lib/utils'
 
 type SortOption = 'newest' | 'price_asc' | 'price_desc' | 'name'
 
-export default function ShopContent() {
+interface ShopContentProps {
+  products: ShopProduct[]
+  categories: ShopCategory[]
+  total: number
+  /** True when the Laravel API could not be reached. */
+  loadFailed?: boolean
+}
+
+export default function ShopContent({ products, categories, total, loadFailed = false }: ShopContentProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<SortOption>('newest')
 
   const filteredProducts = useMemo(() => {
-    let products = [...SHOP_PRODUCTS]
+    let result = [...products]
 
     if (selectedCategory) {
-      products = products.filter((p) => p.categorySlug === selectedCategory)
+      result = result.filter((p) => p.categorySlug === selectedCategory)
     }
 
     if (searchQuery.trim()) {
       const q = searchQuery.trim().toLowerCase()
-      products = products.filter(
+      result = result.filter(
         (p) => p.name.toLowerCase().includes(q) || p.shortDescription.toLowerCase().includes(q)
       )
     }
 
     switch (sortBy) {
       case 'price_asc':
-        products.sort((a, b) => a.price - b.price)
+        result.sort((a, b) => a.price - b.price)
         break
       case 'price_desc':
-        products.sort((a, b) => b.price - a.price)
+        result.sort((a, b) => b.price - a.price)
         break
       case 'name':
-        products.sort((a, b) => a.name.localeCompare(b.name, 'ar'))
+        result.sort((a, b) => a.name.localeCompare(b.name, 'ar'))
         break
       default:
-        products.sort((a, b) => b.id - a.id)
+        result.sort((a, b) => b.id - a.id)
     }
 
-    return products
-  }, [selectedCategory, searchQuery, sortBy])
+    return result
+  }, [products, selectedCategory, searchQuery, sortBy])
 
   return (
     <>
@@ -147,11 +155,11 @@ export default function ShopContent() {
                       }`}
                     >
                       جميع المنتجات
-                      <span className="ms-1 text-xs opacity-70">({SHOP_PRODUCTS.length})</span>
+                      <span className="ms-1 text-xs opacity-70">({total})</span>
                     </button>
                   </li>
-                  {SHOP_CATEGORIES.map((cat) => {
-                    const count = SHOP_PRODUCTS.filter((p) => p.categorySlug === cat.slug).length
+                  {categories.map((cat) => {
+                    const count = cat.productsCount
                     return (
                       <li key={cat.id}>
                         <button
@@ -191,15 +199,24 @@ export default function ShopContent() {
               {filteredProducts.length === 0 ? (
                 <div className="flex min-h-[300px] flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 text-center">
                   <Package className="mb-4 h-16 w-16 text-gray-300" />
-                  <h3 className="mb-2 text-lg font-bold text-gray-700">لا توجد منتجات</h3>
-                  <p className="text-sm text-gray-500">جرب تغيير التصنيف أو البحث</p>
+                  {loadFailed ? (
+                    <>
+                      <h3 className="mb-2 text-lg font-bold text-gray-700">تعذر تحميل المنتجات</h3>
+                      <p className="text-sm text-gray-500">حدث خطأ مؤقت. برجاء المحاولة مرة أخرى أو التواصل معنا مباشرة.</p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="mb-2 text-lg font-bold text-gray-700">لا توجد منتجات</h3>
+                      <p className="text-sm text-gray-500">جرب تغيير التصنيف أو البحث</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <>
                   <p className="mb-4 text-sm text-gray-500">
                     عرض {filteredProducts.length} منتج
                     {selectedCategory && (
-                      <> في <strong>{SHOP_CATEGORIES.find((c) => c.slug === selectedCategory)?.name}</strong></>
+                      <> في <strong>{categories.find((c) => c.slug === selectedCategory)?.name}</strong></>
                     )}
                   </p>
                   <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
